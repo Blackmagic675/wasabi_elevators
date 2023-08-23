@@ -68,7 +68,9 @@ AddEventHandler('wasabi_elevator:noAccess', function()
     lib.notify({
         title = 'No Access',
         description = 'You do not have access to this floor',
-        type = 'error'
+        type = 'error',
+        position = 'center-right',
+        duration = 5000,
     })
 end)
 
@@ -76,16 +78,20 @@ AddEventHandler('wasabi_elevator:openMenu', function(data)
     local elevator = data.elevator
     local floor = data.floor
     local elevatorData = Config.Elevators[elevator]
+    local meanuTitle = false
     local Options = {}
 
     for k,v in pairs(elevatorData) do
         if k == floor then
-            table.insert(Options, {
-                title = v.title..' (Current)',
-                description = v.description,
-                event = '',
-                --args = { elevator = elevator, floor = k }
-            })
+            if not v.isDoor then
+                table.insert(Options, {
+                    
+                    title = v.title..' (Current)',
+                    description = v.description,
+                    event = '',
+                    --args = { elevator = elevator, floor = k }
+                })
+            end
         elseif v.groups then
             local found
             for i=1, #v.groups do
@@ -100,12 +106,14 @@ AddEventHandler('wasabi_elevator:openMenu', function(data)
                     event = 'wasabi_elevator:goToFloor',
                     args = { elevator = elevator, floor = k }
                 })
+                meanuTitle = v.meanuTitle
             else
                 table.insert(Options, {
                     title = v.title,
                     description = v.description,
                     event = 'wasabi_elevator:noAccess'
                 })
+                meanuTitle = v.meanuTitle
             end
         elseif not v.groups then
             table.insert(Options, {
@@ -114,19 +122,22 @@ AddEventHandler('wasabi_elevator:openMenu', function(data)
                 event = 'wasabi_elevator:goToFloor',
                 args = { elevator = elevator, floor = k }
             })
+            meanuTitle = v.meanuTitle
         else
             table.insert(Options, {
                 title = v.title,
                 description = v.description,
                 event = 'wasabi_elevator:noAccess'
             })
+            meanuTitle = v.meanuTitle
         end
     end
     lib.registerContext({
-		id = 'elevator_menu',
-		title = 'Elevator Menu',
-		options = Options
-	})
+        id = 'elevator_menu',
+        title = 'Elevator Menu',
+        title = meanuTitle,
+        options = Options
+    })
 
 	lib.showContext('elevator_menu')
 end)
@@ -137,8 +148,8 @@ CreateThread(function()
             if b.groups then
                 exports[target]:AddBoxZone(k..':'..a, b.coords, b.target.width, b.target.length, {
                     name = k..':'..a,
-                    heading = b.target.heading,
-                    debugPoly = false,
+                    heading = b.heading,
+                    debugPoly = Config.Debug,
                     minZ = b.coords.z - 1.5,
                     maxZ = b.coords.z + 1.5
                 },
@@ -152,13 +163,13 @@ CreateThread(function()
                             floor = a
                         },
                     },
-                    distance = 1.5 
+                    distance = 2.0
                 })
             else
                 exports[target]:AddBoxZone(k..':'..a, b.coords, b.target.width, b.target.length, {
                     name = k..':'..a,
-                    heading = b.target.heading,
-                    debugPoly = false,
+                    heading = b.heading,
+                    debugPoly = Config.Debug,
                     minZ = b.coords.z - 1.5,
                     maxZ = b.coords.z + 1.5
                 },
@@ -172,7 +183,7 @@ CreateThread(function()
                             floor = a
                         },
                     },
-                    distance = 1.5
+                    distance = 2.0
                 })
             end
         end
