@@ -13,6 +13,8 @@ Config.Elevators = {
             heading = 70.65, -- Heading of how will spawn on floor
             title = 'Floor 2', -- Title 
             description = 'Main Floor', -- Description
+            meanuTitle = 'Door', --'Door' or Elevator'
+            isDoor = true,
             target = { -- Target length/width
                 width = 5,
                 length = 4
@@ -27,9 +29,11 @@ Config.Elevators = {
             heading = 252.84,
             title = 'Floor 1',
             description = 'Lower Floor',
+            meanuTitle = 'Door', --'Door' or Elevator'
+            isDoor = true,
             target = {
-            width = 5,
-            length = 4
+                width = 5,
+                length = 4
             } -- Example without group
         },
     },
